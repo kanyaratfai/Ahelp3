@@ -36,14 +36,17 @@ import org.json.JSONObject;
 public class HomeActivity extends AppCompatActivity {
 
     //Explicit
-    private Button button;
+    private Button button ,callGreenButton;
     private ImageView img;
     private String truePasswordString, userPasswordString,
             idUserString, nameString, idCallString;
     private boolean statusABoolean = true;
     private LocationManager locationManager;
     private Criteria criteria;
+
     private double latADouble = 13.859882, lngADouble=100.481604;
+    private String phoneHelpCall; //phone ของผู้ช่วยเหลือ
+    private boolean statusCallGreen = true;
 
 
     @Override
@@ -51,6 +54,14 @@ public class HomeActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
+        callGreenButton = (Button) findViewById(R.id.button13);
+        callGreenButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                statusCallGreen = false;
+                findPhoneNumberFriend();
+            }
+        });
         //setting ขออนุญาติใช้ server
         locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
         criteria = new Criteria();
@@ -284,13 +295,49 @@ public class HomeActivity extends AppCompatActivity {
             Cursor cursor = sqLiteDatabase.rawQuery("SELECT * FROM phoneTABLE WHERE Action = 1", null);
             cursor.moveToFirst();
             Log.d("12janV2", "cursor.getCount==>" + cursor.getCount());
+            phoneHelpCall = cursor.getString(2);
+            Log.d("12janV2", "phoneHelpCall==>" + phoneHelpCall);
 
+            if (statusCallGreen) {
+                delayTime();
+            } else {
+                callPhoneToFriend();
+            }
 
         } catch (Exception e) {
             Log.d("12janV2", "e ==>" + e.toString());
         }
 
+    }//findPhone
+
+    private void delayTime() {
+
+        Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                callPhoneToFriend();
+
+            }
+        },5000);//หน่วงเวลา 5 วินาที
+
     }
+
+    private void callPhoneToFriend() {
+
+        try {
+
+            Intent intent = new Intent(Intent.ACTION_CALL);
+            intent.setData(Uri.parse("tel:=" + phoneHelpCall));
+            startActivity(intent);
+
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+
+    }//callPhoneToFriend
 
     private void confirmPassword() {
 
