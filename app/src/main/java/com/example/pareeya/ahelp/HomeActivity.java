@@ -267,8 +267,28 @@ public class HomeActivity extends AppCompatActivity {
 
                 confirmPassword();
 
+
             }   // onClick
         });
+
+    }
+
+    private void findPhoneNumberFriend() {
+
+        try {
+
+
+            SQLiteDatabase sqLiteDatabase = openOrCreateDatabase(MyOpenHelper.database_name,
+                    MODE_PRIVATE,null);
+
+            Cursor cursor = sqLiteDatabase.rawQuery("SELECT * FROM phoneTABLE WHERE Action = 1", null);
+            cursor.moveToFirst();
+            Log.d("12janV2", "cursor.getCount==>" + cursor.getCount());
+
+
+        } catch (Exception e) {
+            Log.d("12janV2", "e ==>" + e.toString());
+        }
 
     }
 
@@ -300,6 +320,7 @@ public class HomeActivity extends AppCompatActivity {
                 if (userPasswordString.equals(truePasswordString)) {
                     //Password True
                     callFriend();
+                    findPhoneNumberFriend();
                     dialogInterface.dismiss();
                 } else {
                     passwordFalse();
