@@ -15,4 +15,5 @@
     <string name="callhelp">โทรฉุกเฉิน</string>
     <string name="setting">ตั้งค่า</string>
     <string name="content">ถัดไป</string>
+    <string name="title_activity_notification_maps">Map</string>
 </resources>

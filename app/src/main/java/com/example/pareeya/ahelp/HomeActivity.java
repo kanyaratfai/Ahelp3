@@ -43,7 +43,7 @@ public class HomeActivity extends AppCompatActivity {
     private boolean statusABoolean = true;
     private LocationManager locationManager;
     private Criteria criteria;
-    private double lagADouble = 13.859882, lngADouble=100.481604;
+    private double latADouble = 13.859882, lngADouble=100.481604;
 
 
     @Override
@@ -91,17 +91,17 @@ public class HomeActivity extends AppCompatActivity {
 
         Location networkLocation = myFindLocation(LocationManager.NETWORK_PROVIDER);
         if (networkLocation != null) {
-            lagADouble = networkLocation.getLatitude();
+            latADouble = networkLocation.getLatitude();
             lngADouble = networkLocation.getLongitude();
 
         }
 
         Location gpsLocation = myFindLocation(LocationManager.GPS_PROVIDER);
         if (gpsLocation != null) {
-            lagADouble = gpsLocation.getLatitude();
+            latADouble = gpsLocation.getLatitude();
             lngADouble = gpsLocation.getLongitude();
         }
-        Log.d("22decV3", "lat==>" + lagADouble);
+        Log.d("22decV3", "lat==>" + latADouble);
         Log.d("22decV3", "lng==>" + lngADouble);
     }//onResume
 
@@ -132,7 +132,7 @@ public class HomeActivity extends AppCompatActivity {
         @Override
         public void onLocationChanged(Location location) {
 
-            lagADouble = location.getLatitude();
+            latADouble = location.getLatitude();
             lngADouble = location.getLongitude();
 
         }
@@ -236,7 +236,7 @@ public class HomeActivity extends AppCompatActivity {
         statusABoolean = false;
 
         Log.d("8decV4", "Noti OK");
-        Intent intent = new Intent(HomeActivity.this, ShowNotification.class);
+        Intent intent = new Intent(HomeActivity.this, NotificationMaps.class);
         intent.putExtra("idUser", idUserString);
         PendingIntent pendingIntent = PendingIntent.getActivity(HomeActivity.this,
                 (int) System.currentTimeMillis(), intent,0);
@@ -258,6 +258,7 @@ public class HomeActivity extends AppCompatActivity {
 
     }//noti
 
+    //คลิกปุ่มแจ้งเตือน
     private void imgController() {
 
         img.setOnClickListener(new View.OnClickListener() {
@@ -321,6 +322,8 @@ public class HomeActivity extends AppCompatActivity {
         //Find idUser
         try {
 
+            //ค้นหาข้อมูลคนที่กำลัง LogIn อยู่ โดยต้องการ ID ของ User ที่ LogIn ==>idUserString
+
             FindIDuser findIDuser = new FindIDuser(HomeActivity.this,
                     nameString, truePasswordString);
             findIDuser.execute();
@@ -355,8 +358,15 @@ public class HomeActivity extends AppCompatActivity {
 
             for (int i=0;i<cursor.getCount();i++) {
 
-                String strAHeip = idUserString;
+                String strAHeip = idUserString; //id ของ User ที่กดเรียกเพื่อน
+                //id ของเพื่อนที่ บันนทึกไว้ใน phoneTABLE
                 String idUser = cursor.getString(cursor.getColumnIndex(MyManage.column_idCall));
+
+
+                //ในแต่ระรอบจะส่ง id ของคนกดเรียกเพื่อน และ เพื่อนไปที่ editAhelp
+
+                Log.d("12janV1", "ตำแหน่ง Lat ==>" + latADouble);
+                Log.d("12janV1", "ตำแหน่ง Lng ==>" + lngADouble);
 
                 editAhelp(idUser,strAHeip);
 
@@ -375,8 +385,9 @@ public class HomeActivity extends AppCompatActivity {
 
         try {
 
-            EditAhelp editAhelp = new EditAhelp(HomeActivity.this, idUser, strAHelp);
-            editAhelp.execute();
+            EditAhelp editAhelp = new EditAhelp(HomeActivity.this,
+                    idUser, strAHelp, Double.toString(latADouble),Double.toString(lngADouble));
+            editAhelp.execute("http://swiftcodingthai.com/fai/edit_Ahelp_where_id.php");
 
             if (Boolean.parseBoolean(editAhelp.get())) {
                 Toast.makeText(HomeActivity.this, "ส่งข้อความเรียบร้อยแล้ว", Toast.LENGTH_SHORT).show();
